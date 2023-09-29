@@ -33,6 +33,12 @@ def charger_enonce(row_idx):
     val = df.at[int(row_idx), 'Enoncé']
     return val
 
+
+def charger_requete(row_idx):
+    val = df.at[int(row_idx), 'Réponse']
+    return val  
+
+
 def clean_string(a_string):
     """
     Cleans a string by replacing special characters with spaces.
@@ -114,32 +120,58 @@ def compare_results(result, expected_answer):
         message = "Incorrect. Try again!"
     return message
 
-
+    
 with gr.Blocks() as app:
     
-    gr.Markdown("# SQL Questions for Job Interview")
+    gr.Markdown("<h1 style='font-size:300%;text-align:center;'>SQL Questions for Job Interview</h1>")
     
-    gr.Markdown("### Teste tes connaissances en SQL!")
+    gr.Markdown("## Teste tes connaissances en SQL!")
     with gr.Row():
         idx = gr.components.Dropdown(
                                     label="Selectionne une question",
                                     choices=df.index.tolist()
                                     )
         txt = gr.Textbox(label="Enoncé", lines=3)
+        
     btn = gr.Button(value="Charger l'énoncé")
     btn.click(charger_enonce, inputs=[idx], outputs=[txt]) # On charge la question 
 
     with gr.Row():
         requete = gr.Textbox(label='Entre ta requête SQL ici :')
-        print(f"### REQUETE : {requete}")
         verdict = gr.Textbox(label='verdict')
     
-    resultat = gr.Dataframe(label="Résultats de ta requête", type='pandas')
+    gr.Markdown("### Résultats de ta requête")
+    resultat = gr.Dataframe(type='pandas')
     
-    btn2 = gr.Button(value="Vérifiez la requête")
-    btn2.click(execute_sql, inputs=[idx, requete], outputs=[verdict, resultat]) # On charge la question     
+    with gr.Row():
+      btn2 = gr.Button(value="Vérifier la requête")
+      btn2.click(execute_sql, inputs=[idx, requete], outputs=[verdict, resultat])  
 
-    gr.HTML("""<img alt='ERD Schema' src='./dbschema.png'>""")
+      btn3 = gr.Button(value="Voir la réponse")
+      btn3.click(charger_requete, inputs=[idx], outputs=[requete])  
+
+    gr.Markdown("<br><br>")
+  
+    with gr.Row():
+      gr.Markdown("""
+                  
+                  ## Un petit schéma pour mieux comprendre la structure de la base  
+                    
+                  ### Mode d'emploi :  
+                      
+                  1) Choisi un exercice dans le menu déroulant  
+                  2) Appui sur le bouton, "Charger l'enoncé"  
+                  3) Insert le code SQL de ta requête  
+                  4) Clique sur le bouton "Vérifier la requête" pour afficher le verdict et le résultat sous forme de dataframe  
+                  <br>
+                  **Remarque** : pour que tes requêtes fonctionnent, il faut que les champs ou les noms de tables soient écrits entre guillemets:  
+                  > Exemple :  
+                  > SELECT "FirstName" FROM "Customer"  
+                    
+                  **Conseil** : Pour plus de lisibilité, tu peux écrire ta requête sur plusieurs lignes.
+                  """)
+      
+      gr.HTML('<img src="https://raw.githubusercontent.com/gpenessot/sql_job_interview_test/main/dbschema.png" alt="ERD Schema" />')
     
 if __name__ == "__main__":
     app.launch()
