@@ -35,8 +35,18 @@ def charger_enonce(row_idx):
 
 
 def charger_requete(row_idx):
+    """
+    Retrieve the value in the 'Réponse' column of the row with the given index.
+
+    Parameters:
+    - row_idx (int): The index of the row to retrieve the value from.
+
+    Returns:
+    - The value in the 'Réponse' column of the row with the given index.
+    """
+
     val = df.at[int(row_idx), 'Réponse']
-    return val  
+    return val
 
 
 def clean_string(a_string):
